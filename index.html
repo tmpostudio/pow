@@ -3,8 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Push-Up Counter Prototype</title>
+    <title>MANLET - Pushup Tracker v0.0.2</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
     <style>
+        @font-face {
+            font-family: 'Arcade';
+            src: url(data:font/woff2;base64,d09GMgABAAAAAAZQAA0AAAAADMQAAAX+AAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGhYbgRwcKgZgADwRCAqGXIUZC0AAATYCJAMgBCAFhAoHIBufC8gOJSHBwAAhwABgPHzt9+fcd2e/7JImCCTVMV0IwV2m1SQUPg3hsf//sqqkMdYFtVh1yb7lJH+yUpxIl9Sq+t/eL3u/jxXlAW6A4wGOcIAD3OCV1TrAb7hfgCfwCp4h/wEfAE9QAL+gAH5BAfw=) format('woff2');
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -12,56 +20,369 @@
         }
 
         body {
-            font-family: 'Courier New', monospace;
-            background: linear-gradient(135deg, #FFB6C1 0%, #FFA07A 100%);
+            font-family: 'Inter', sans-serif;
+            background: #71717a;
             min-height: 100vh;
             display: flex;
-            justify-content: center;
             align-items: center;
-            padding: 10px;
-            overflow-x: hidden;
+            justify-content: center;
+            padding: 20px;
         }
 
-        .container {
-            max-width: 500px;
-            width: 100%;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 15px;
-        }
-
-        .logo {
-            font-size: 28px;
-            color: #FF6347;
-            font-style: italic;
-            font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .proof-text {
-            font-size: 9px;
-            color: #666;
-            letter-spacing: 2px;
-        }
-
-        .video-container {
-            position: relative;
-            background: #000;
-            border-radius: 15px;
+        .app-wrapper {
+            width: 390px;
+            height: 844px;
+            background: #000000;
+            border-radius: 33px;
+            box-shadow: 0px 25px 50px -12px rgba(0, 0, 0, 0.25);
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            height: 70vh;
-            min-height: 500px;
+            position: relative;
+        }
+
+        .screen {
+            display: none;
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Home Screen */
+        .home-bg {
+            position: absolute;
+            inset: 0;
+            background: #000000;
+        }
+
+        .home-bg-blur {
+            position: absolute;
+            left: -96px;
+            top: -329px;
+            width: 587px;
+            height: 1173px;
+            filter: blur(6px);
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"><rect fill="%23333" width="100%" height="100%"/></svg>');
+            opacity: 0.4;
+        }
+
+        .manlet-logo {
+            position: absolute;
+            left: 22px;
+            top: 92px;
+            width: 350px;
+            height: 50px;
+        }
+
+        .tagline {
+            position: absolute;
+            left: 195px;
+            top: 448px;
+            transform: translateY(-50%);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            line-height: 14px;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .start-button {
+            position: absolute;
+            left: 19px;
+            top: 673px;
+            width: 350px;
+            height: 71px;
+            background: rgba(23, 33, 35, 0.77);
+            backdrop-filter: blur(6px);
+            border: 1px solid #d2fffa;
+            border-radius: 12px;
+            opacity: 0.88;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            font-size: 18px;
+            color: white;
+            letter-spacing: 0.29px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .start-button:hover {
+            opacity: 1;
+            background: rgba(23, 33, 35, 0.9);
+        }
+
+        /* Onboarding Screens */
+        .onboarding-container {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, rgb(9, 9, 11) 0%, rgb(24, 24, 27) 100%);
+            display: flex;
+            align-items: center;
+            justify-center: center;
+            padding: 50px 32px;
+        }
+
+        .onboarding-content {
+            width: 326px;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+
+        .onboarding-logo {
+            padding: 67px 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .info-card {
+            background: rgba(24, 24, 27, 0.5);
+            border: 1px solid #3f3f46;
+            border-radius: 14px;
+            padding: 17px;
+        }
+
+        .info-card h3 {
+            font-size: 18px;
+            font-weight: 500;
+            line-height: 27px;
+            letter-spacing: -0.44px;
+            color: white;
+            margin-bottom: 8px;
+        }
+
+        .info-card p {
+            font-size: 16px;
+            line-height: 24px;
+            letter-spacing: -0.31px;
+            color: #9f9fa9;
+        }
+
+        .btn-white {
+            background: white;
+            color: #18181b;
+            border: none;
+            border-radius: 14px;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 400;
+            letter-spacing: -0.31px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-white:hover {
+            opacity: 0.9;
+        }
+
+        /* Dashboard */
+        .dashboard-content {
+            padding: 24px;
+            padding-bottom: 110px;
+            height: 100%;
+            overflow-y: auto;
+            background: linear-gradient(180deg, #09090b 0%, #18181b 100%);
+        }
+
+        .wallet-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .wallet-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(153, 197, 208, 0.2);
+            backdrop-filter: blur(6px);
+            border: 1px solid #d2fffa;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .wallet-address {
+            flex: 1;
+            font-size: 16px;
+            color: white;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .welcome-section {
+            margin-bottom: 16px;
+        }
+
+        .welcome-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: -0.31px;
+            color: #83b0af;
+            margin-bottom: 4px;
+        }
+
+        .username {
+            font-family: 'Arcade', monospace;
+            font-size: 28px;
+            line-height: 28px;
+            letter-spacing: -0.31px;
+            color: white;
+        }
+
+        .points-card {
+            background: rgba(153, 197, 208, 0.2);
+            backdrop-filter: blur(6px);
+            border: 1px solid #d2fffa;
+            border-radius: 14px;
+            padding: 18px;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .points-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: -0.31px;
+            color: white;
+            margin-bottom: 4px;
+        }
+
+        .points-value {
+            font-size: 48px;
+            font-weight: 600;
+            line-height: 48px;
+            letter-spacing: -0.31px;
+            color: white;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: rgba(153, 197, 208, 0.2);
+            backdrop-filter: blur(6px);
+            border: 1px solid #d2fffa;
+            border-radius: 14px;
+            padding: 18px;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: -0.31px;
+            color: white;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 600;
+            line-height: 24px;
+            letter-spacing: -0.31px;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        /* Navigation (NO LONGER ON SESSION SCREEN) */
+        .nav-container {
+            position: absolute;
+            bottom: 30px;
+            left: 24px;
+            right: 24px;
+            display: flex;
+            gap: 16px;
+        }
+
+        .nav-bar {
+            background: rgba(153, 197, 208, 0.2);
+            backdrop-filter: blur(6px);
+            border: 1px solid #d2fffa;
+            border-radius: 88px;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            width: 264px;
+        }
+
+        .nav-item {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-item svg {
+            width: 24px;
+            height: 24px;
+            stroke: #666;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .nav-item.active svg {
+            stroke: white;
+        }
+
+        .nav-fab {
+            background: rgba(153, 197, 208, 0.2);
+            backdrop-filter: blur(6px);
+            border: 1px solid #d2fffa;
+            border-radius: 88px;
+            flex: 1;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-center: center;
+            cursor: pointer;
+        }
+
+        .nav-fab svg {
+            width: 44px;
+            height: 44px;
+            stroke: white;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        /* Session Screen - UNIQUE NAV */
+        .session-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: #000000;
         }
 
         #video {
             width: 100%;
             height: 100%;
-            display: block;
             object-fit: cover;
-            transform: scaleX(-1); /* Mirror the video */
+            transform: scaleX(-1);
         }
 
         #canvas {
@@ -70,313 +391,915 @@
             left: 0;
             width: 100%;
             height: 100%;
-            transform: scaleX(-1); /* Mirror the canvas too */
+            transform: scaleX(-1);
             pointer-events: none;
         }
 
-        .stats-overlay {
+        .session-overlay {
             position: absolute;
-            top: 15px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(139, 139, 122, 0.95);
-            padding: 12px 25px;
-            border-radius: 8px;
-            text-align: center;
-            min-width: 180px;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
         }
 
-        .rep-count {
-            font-size: 48px;
-            font-weight: bold;
-            color: #000;
-            line-height: 1;
-            margin-bottom: 3px;
-        }
-
-        .rep-label {
-            font-size: 10px;
-            color: #333;
-            letter-spacing: 2px;
-        }
-
-        .timer {
+        .session-top {
             position: absolute;
-            top: 15px;
-            right: 15px;
-            background: rgba(139, 139, 122, 0.95);
-            padding: 10px 18px;
-            border-radius: 8px;
-            font-size: 18px;
-            font-weight: bold;
-            color: #000;
-        }
-
-        .status-indicator {
-            position: absolute;
-            bottom: 15px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(139, 139, 122, 0.95);
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: bold;
-            color: #000;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-        }
-
-        .status-indicator.up {
-            background: rgba(0, 255, 0, 0.9);
-        }
-
-        .status-indicator.down {
-            background: rgba(255, 165, 0, 0.9);
-        }
-
-        .controls {
+            top: 24px;
+            left: 24px;
+            right: 24px;
             display: flex;
-            gap: 10px;
-            margin-top: 15px;
-            justify-content: center;
-            flex-wrap: wrap;
+            justify-content: space-between;
         }
 
-        button {
-            background: #FF6347;
+        .session-stat {
+            background: rgba(26, 6, 43, 0.8);
+            backdrop-filter: blur(7px);
+            border: 1px solid #1a062b;
+            border-radius: 14px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .session-stat-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: -0.31px;
+            color: white;
+        }
+
+        .session-stat-value {
+            font-size: 28px;
+            font-weight: 600;
+            line-height: 24px;
+            letter-spacing: -0.31px;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        .session-stat-value.large {
+            font-size: 88px;
+            line-height: 88px;
+        }
+
+        /* Countdown Overlay */
+        .countdown-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        .countdown-number {
+            font-size: 120px;
+            font-weight: 700;
+            color: #d2fffa;
+            text-shadow: 0 0 40px rgba(210, 255, 250, 0.6);
+            margin-bottom: 24px;
+        }
+
+        .countdown-flash {
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        .countdown-message {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+            text-align: center;
+            padding: 0 40px;
+            line-height: 1.5;
+        }
+
+        .countdown-submessage {
+            font-size: 14px;
+            color: #9f9fa9;
+            margin-top: 12px;
+            text-align: center;
+        }
+
+        .session-bottom {
+            position: absolute;
+            bottom: 24px;
+            left: 24px;
+            right: 24px;
+            pointer-events: auto;
+        }
+
+        .feedback-text {
+            text-align: center;
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+        }
+
+        .session-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 8px;
+        }
+
+        .control-btn {
+            background: rgba(26, 6, 43, 0.9);
+            backdrop-filter: blur(7px);
+            border: 1px solid #1a062b;
+            border-radius: 12px;
+            padding: 12px 8px;
+            color: #ffffff;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            cursor: pointer;
+            pointer-events: auto;
+            letter-spacing: -0.31px;
+            transition: all 0.2s;
+        }
+
+        .control-btn:hover {
+            background: rgba(51, 65, 85, 0.9);
+        }
+
+        .control-btn.end {
+            background: rgba(220, 38, 38, 0.9);
+        }
+
+        .control-btn.end:hover {
+            background: rgba(185, 28, 28, 0.9);
+        }
+
+        /* Stats Screen */
+        .stats-content {
+            padding: 24px;
+            padding-bottom: 110px;
+            height: 100%;
+            overflow-y: auto;
+            background: #09090b;
+        }
+
+        .stats-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .screen-title {
+            font-size: 28px;
+            font-weight: 600;
+            line-height: 24px;
+            letter-spacing: -1px;
+            color: white;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 500;
+            line-height: 30px;
+            letter-spacing: -0.45px;
+            color: white;
+            margin-bottom: 16px;
+        }
+
+        .session-log {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .log-entry {
+            background: rgba(24, 26, 27, 0.5);
+            border: 1px solid #1a062b;
+            border-radius: 14px;
+            padding: 16px;
+        }
+
+        .log-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .log-date {
+            font-size: 16px;
+            color: white;
+            margin-bottom: 2px;
+        }
+
+        .log-subdate {
+            font-size: 13px;
+            color: #9f9fa9;
+        }
+
+        .log-points {
+            color: #5de4ff;
+            font-size: 16px;
+            text-align: right;
+        }
+
+        .log-stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+        }
+
+        .log-stat-label {
+            color: #9f9fa9;
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+
+        .log-stat-value {
+            color: white;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        /* Account Screen */
+        .account-content {
+            padding: 24px;
+            padding-bottom: 110px;
+            height: 100%;
+            overflow-y: auto;
+            background: #09090b;
+        }
+
+        .settings-section {
+            background: rgba(24, 26, 27, 0.5);
+            border: 1px solid #1a062b;
+            border-radius: 14px;
+            padding: 25px;
+            margin-bottom: 24px;
+        }
+
+        .settings-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+        }
+
+        .toggle-switch {
+            width: 48px;
+            height: 24px;
+            background: #00bc7d;
+            border-radius: 12px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            right: 2px;
+            transition: all 0.3s;
+        }
+
+        .toggle-switch.off {
+            background: #3f3f46;
+        }
+
+        .toggle-switch.off::after {
+            left: 2px;
+            right: auto;
+        }
+
+        .input-field {
+            background: #09090b;
+            border: 1px solid #3f3f46;
+            border-radius: 10px;
+            padding: 12px 16px;
+            color: white;
+            font-size: 16px;
+            letter-spacing: -0.31px;
+            width: 100%;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .input-field::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .disconnect-btn {
+            background: #3f3f46;
             color: white;
             border: none;
-            padding: 10px 25px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            transition: all 0.3s ease;
-            font-family: 'Courier New', monospace;
-        }
-
-        button:hover {
-            background: #FF4500;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-
-        button:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .info-panel {
-            background: rgba(255, 255, 255, 0.9);
-            padding: 12px;
-            border-radius: 8px;
-            margin-top: 15px;
-        }
-
-        .info-panel h3 {
-            color: #FF6347;
-            margin-bottom: 8px;
-            font-size: 14px;
-        }
-
-        .info-panel ul {
-            list-style-position: inside;
-            color: #333;
-            line-height: 1.6;
-            font-size: 11px;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 25px;
-            background: rgba(255, 255, 255, 0.9);
             border-radius: 10px;
-            margin-top: 15px;
-            font-size: 12px;
-        }
-
-        .angle-debug {
-            position: absolute;
-            top: 100px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 10px;
-            border-radius: 5px;
-            font-size: 12px;
-            max-width: 200px;
-        }
-
-        .angle-debug div {
-            margin: 5px 0;
+            padding: 10px 20px;
+            font-size: 14px;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="logo">Workout</div>
-            <div class="proof-text">PROOF OF</div>
-        </div>
-
-        <div class="video-container">
-            <video id="video" playsinline autoplay></video>
-            <canvas id="canvas"></canvas>
+    <div class="app-wrapper">
+        <!-- HOME SCREEN -->
+        <div id="home-screen" class="screen active">
+            <div class="home-bg">
+                <div class="home-bg-blur"></div>
+            </div>
             
-            <div class="stats-overlay">
-                <div class="rep-count" id="repCount">000</div>
-                <div class="rep-label">PUSHUPS</div>
+            <div class="manlet-logo">
+                <svg width="350" height="50" viewBox="0 0 350 50" fill="none">
+                    <text x="0" y="40" fill="white" font-family="Arial Black, sans-serif" font-size="45" font-weight="900" letter-spacing="4">MANLET</text>
+                </svg>
             </div>
 
-            <div class="timer" id="timer">0:00</div>
-            
-            <div class="status-indicator" id="status">Loading...</div>
+            <div class="tagline">
+                <p style="margin: 0;">A PUSHUP TRACKER</p>
+                <p style="margin: 0;">REWARDING THE</p>
+                <p style="margin: 0;">HIGHEST PERFORMING</p>
+                <p style="margin: 0;">MANLETS ON SOLANA</p>
+            </div>
 
-            <!-- Debug panel (can be hidden later) -->
-            <div class="angle-debug" id="angleDebug" style="display: none;">
-                <div><strong>Debug Info:</strong></div>
-                <div id="leftElbowAngle">L Elbow: --</div>
-                <div id="rightElbowAngle">R Elbow: --</div>
-                <div id="bodyAngle">Body: --</div>
+            <button class="start-button" onclick="showScreen('onboarding-screen')">
+                START
+            </button>
+        </div>
+
+        <!-- ONBOARDING SCREEN 1 -->
+        <div id="onboarding-screen" class="screen">
+            <div class="onboarding-container">
+                <div class="onboarding-content">
+                    <div class="onboarding-logo">
+                        <svg width="265" height="38" viewBox="0 0 265 38" fill="none">
+                            <text x="0" y="30" fill="white" font-family="Arial Black, sans-serif" font-size="32" font-weight="900" letter-spacing="3">MANLET</text>
+                        </svg>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 16px;">
+                        <div class="info-card">
+                            <h3>GM, Manlet</h3>
+                            <p>Connect your wallet, track your sessions, and earn points (CALORIES) for pushups.</p>
+                        </div>
+
+                        <div class="info-card">
+                            <h3>What are CALORIES?</h3>
+                            <p>In the future you will be able to burn $CALORIES to redeem for swag and special offers</p>
+                        </div>
+
+                        <div class="info-card">
+                            <h3>Get Started</h3>
+                            <p>Connect wallet, start your first pushup session, earn points.</p>
+                        </div>
+                    </div>
+
+                    <button class="btn-white" onclick="showScreen('setup-screen')">
+                        Next
+                    </button>
+                </div>
             </div>
         </div>
 
-        <div class="controls">
-            <button id="startBtn">Start Session</button>
-            <button id="resetBtn">Reset</button>
-            <button id="debugBtn">Toggle Debug</button>
+        <!-- SETUP SCREEN -->
+        <div id="setup-screen" class="screen">
+            <div class="onboarding-container">
+                <div class="onboarding-content" style="justify-content: center;">
+                    <div style="text-align: center; margin-bottom: 32px;">
+                        <p style="color: white; font-size: 18px; font-weight: 600; margin-bottom: 16px;">Lean your phone against a wall.</p>
+                        <p style="color: #9f9fa9; font-size: 16px; line-height: 24px;">With the front camera facing you, fully on screen.</p>
+                        <p style="color: #9f9fa9; font-size: 16px; line-height: 24px; margin-top: 16px;">Start in the UP position and wait for the timer to begin.</p>
+                    </div>
+
+                    <button class="btn-white" onclick="connectWallet()">
+                        Connect Wallet
+                    </button>
+                </div>
+            </div>
         </div>
 
-        <div class="info-panel">
-            <h3>📸 Setup Instructions:</h3>
-            <ul>
-                <li>Position camera facing you (front view recommended)</li>
-                <li>Stand about 6-8 feet from camera</li>
-                <li>Ensure good lighting</li>
-                <li>Full body should be visible in frame</li>
-                <li>Start in plank position when ready</li>
-            </ul>
+        <!-- DASHBOARD SCREEN -->
+        <div id="dashboard-screen" class="screen">
+            <div class="dashboard-content">
+                <div class="wallet-header">
+                    <div class="wallet-icon">
+                        <svg width="24" height="24" fill="none" viewBox="0 0 24 24">
+                            <rect x="2" y="4" width="20" height="16" rx="2" stroke="white" stroke-width="2"/>
+                            <path d="M2 10h20" stroke="white" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <div class="wallet-address">0x1234...5678</div>
+                </div>
+
+                <div class="welcome-section">
+                    <div class="welcome-label">WELCOME BACK</div>
+                    <div class="username">CHAD</div>
+                </div>
+
+                <div class="points-card">
+                    <div class="points-label">Total Points</div>
+                    <div class="points-value" id="dashboardPoints">12,847</div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Total Pushups</div>
+                        <div class="stat-value" id="totalPushups">1,247</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">STREAK / DAYS</div>
+                        <div class="stat-value">3</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="nav-container">
+                <div class="nav-bar">
+                    <button class="nav-item active" data-screen="dashboard-screen" onclick="showScreen('dashboard-screen')">
+                        <svg fill="none" viewBox="0 0 24 24">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke-linecap="round" stroke-linejoin="round"/>
+                            <polyline points="9 22 9 12 15 12 15 22" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                    <button class="nav-item" data-screen="stats-screen" onclick="showScreen('stats-screen')">
+                        <svg fill="none" viewBox="0 0 24 24">
+                            <line x1="18" y1="20" x2="18" y2="10" stroke-linecap="round"/>
+                            <line x1="12" y1="20" x2="12" y2="4" stroke-linecap="round"/>
+                            <line x1="6" y1="20" x2="6" y2="14" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                    <button class="nav-item" data-screen="account-screen" onclick="showScreen('account-screen')">
+                        <svg fill="none" viewBox="0 0 24 24">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke-linecap="round"/>
+                            <circle cx="12" cy="7" r="4" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                </div>
+                <button class="nav-fab" onclick="startWorkout()">
+                    <svg fill="none" viewBox="0 0 44 44">
+                        <circle cx="22" cy="22" r="20" stroke-linecap="round" stroke-linejoin="round"/>
+                        <line x1="22" y1="14.67" x2="22" y2="29.33" stroke-linecap="round" stroke-linejoin="round"/>
+                        <line x1="14.67" y1="22" x2="29.33" y2="22" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </div>
         </div>
 
-        <div class="loading" id="loadingMsg">
-            Loading pose detection model... This may take a moment.
+        <!-- SESSION SCREEN (NO GLOBAL NAV) -->
+        <div id="session-screen" class="screen">
+            <div class="session-container">
+                <video id="video" playsinline autoplay muted></video>
+                <canvas id="canvas"></canvas>
+                
+                <!-- Countdown Overlay -->
+                <div id="countdownOverlay" class="countdown-overlay" style="display: none;">
+                    <div class="countdown-number countdown-flash" id="countdownNumber">10</div>
+                    <div class="countdown-message" id="countdownMessage">
+                        Get into position!<br>
+                        <span class="countdown-submessage">Start in the UP position (arms extended)</span>
+                    </div>
+                </div>
+
+                <div class="session-overlay">
+                    <div class="session-top">
+                        <div class="session-stat">
+                            <div class="session-stat-label">TIME</div>
+                            <div class="session-stat-value" id="timer">0:43</div>
+                        </div>
+                        <div class="session-stat">
+                            <div class="session-stat-label">Total Pushups</div>
+                            <div class="session-stat-value large" id="repCount">99</div>
+                        </div>
+                    </div>
+
+                    <div class="session-bottom">
+                        <p class="feedback-text" id="feedbackText">LIVE FEEDBACK HERE<br>ON TWO ROWS IF NEEDED</p>
+                        <div class="session-controls">
+                            <button class="control-btn" onclick="toggleSound()" id="soundBtn">SOUND</button>
+                            <button class="control-btn" onclick="showInfo()">INFO</button>
+                            <button class="control-btn" onclick="resetWorkout()">RESET</button>
+                            <button class="control-btn end" onclick="endWorkout()">END<br>SESSION</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STATS SCREEN -->
+        <div id="stats-screen" class="screen">
+            <div class="stats-content">
+                <div class="stats-header">
+                    <h1 class="screen-title">Stats & History</h1>
+                </div>
+
+                <div class="points-card" style="margin-bottom: 24px;">
+                    <div class="points-label">Total Points</div>
+                    <div class="points-value">12,847</div>
+                </div>
+
+                <h2 class="section-title">Session Log</h2>
+
+                <div class="session-log" id="sessionLog">
+                    <div class="log-entry">
+                        <div class="log-header">
+                            <div>
+                                <div class="log-date">Today</div>
+                                <div class="log-subdate">Demo Session</div>
+                            </div>
+                            <div>
+                                <div class="log-points">+0</div>
+                                <div class="log-subdate">points</div>
+                            </div>
+                        </div>
+                        <div class="log-stats-grid">
+                            <div>
+                                <div class="log-stat-label">Duration</div>
+                                <div class="log-stat-value">0m 0s</div>
+                            </div>
+                            <div>
+                                <div class="log-stat-label">Count</div>
+                                <div class="log-stat-value">0</div>
+                            </div>
+                            <div>
+                                <div class="log-stat-label">Streak</div>
+                                <div class="log-stat-value">1 day</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="nav-container">
+                <div class="nav-bar">
+                    <button class="nav-item" data-screen="dashboard-screen" onclick="showScreen('dashboard-screen')">
+                        <svg fill="none" viewBox="0 0 24 24">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke-linecap="round" stroke-linejoin="round"/>
+                            <polyline points="9 22 9 12 15 12 15 22" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                    <button class="nav-item active" data-screen="stats-screen" onclick="showScreen('stats-screen')">
+                        <svg fill="none" viewBox="0 0 24 24">
+                            <line x1="18" y1="20" x2="18" y2="10" stroke-linecap="round"/>
+                            <line x1="12" y1="20" x2="12" y2="4" stroke-linecap="round"/>
+                            <line x1="6" y1="20" x2="6" y2="14" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                    <button class="nav-item" data-screen="account-screen" onclick="showScreen('account-screen')">
+                        <svg fill="none" viewBox="0 0 24 24">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke-linecap="round"/>
+                            <circle cx="12" cy="7" r="4" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                </div>
+                <button class="nav-fab" onclick="startWorkout()">
+                    <svg fill="none" viewBox="0 0 44 44">
+                        <circle cx="22" cy="22" r="20" stroke-linecap="round" stroke-linejoin="round"/>
+                        <line x1="22" y1="14.67" x2="22" y2="29.33" stroke-linecap="round" stroke-linejoin="round"/>
+                        <line x1="14.67" y1="22" x2="29.33" y2="22" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- ACCOUNT SCREEN -->
+        <div id="account-screen" class="screen">
+            <div class="account-content">
+                <h1 class="screen-title" style="margin-bottom: 24px;">Account</h1>
+
+                <div class="settings-section">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+                        <div style="display: flex; align-items: center; gap: 16px;">
+                            <div class="wallet-icon">
+                                <svg width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <rect x="2" y="4" width="20" height="16" rx="2" stroke="white" stroke-width="2"/>
+                                    <path d="M2 10h20" stroke="white" stroke-width="2"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <div style="font-size: 11px; color: #9f9fa9; margin-bottom: 4px;">Connected Wallet</div>
+                                <div class="wallet-address">0x1234...5678</div>
+                            </div>
+                        </div>
+                        <button class="disconnect-btn">Disconnect</button>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h2 class="section-title">Profile</h2>
+                    <div>
+                        <label style="display: block; font-size: 13px; color: #9f9fa9; margin-bottom: 8px;">Username (optional)</label>
+                        <input type="text" class="input-field" placeholder="Enter username">
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h2 class="section-title">Settings</h2>
+                    <div class="settings-row" style="border-bottom: 1px solid rgba(63, 63, 70, 0.3);">
+                        <span style="color: white;">Sound Effects</span>
+                        <div class="toggle-switch" id="soundToggle"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="nav-container">
+                <div class="nav-bar">
+                    <button class="nav-item" data-screen="dashboard-screen" onclick="showScreen('dashboard-screen')">
+                        <svg fill="none" viewBox="0 0 24 24">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke-linecap="round" stroke-linejoin="round"/>
+                            <polyline points="9 22 9 12 15 12 15 22" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                    <button class="nav-item" data-screen="stats-screen" onclick="showScreen('stats-screen')">
+                        <svg fill="none" viewBox="0 0 24 24">
+                            <line x1="18" y1="20" x2="18" y2="10" stroke-linecap="round"/>
+                            <line x1="12" y1="20" x2="12" y2="4" stroke-linecap="round"/>
+                            <line x1="6" y1="20" x2="6" y2="14" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                    <button class="nav-item active" data-screen="account-screen" onclick="showScreen('account-screen')">
+                        <svg fill="none" viewBox="0 0 24 24">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke-linecap="round"/>
+                            <circle cx="12" cy="7" r="4" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                </div>
+                <button class="nav-fab" onclick="startWorkout()">
+                    <svg fill="none" viewBox="0 0 44 44">
+                        <circle cx="22" cy="22" r="20" stroke-linecap="round" stroke-linejoin="round"/>
+                        <line x1="22" y1="14.67" x2="22" y2="29.33" stroke-linecap="round" stroke-linejoin="round"/>
+                        <line x1="14.67" y1="22" x2="29.33" y2="22" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </div>
         </div>
     </div>
 
-    <!-- TensorFlow.js and MoveNet -->
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.11.0"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection@2.1.0"></script>
+    <!-- TensorFlow.js Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.11.0/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection@2.1.0/dist/pose-detection.min.js"></script>
 
     <script>
-        // Configuration
+        // ===== AUDIO SYSTEM =====
+        let soundEnabled = true;
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playBeep(frequency = 800, duration = 150) {
+            if (!soundEnabled) return;
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = frequency;
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration / 1000);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + duration / 1000);
+        }
+
+        function playStartBeep() {
+            playBeep(1000, 200);
+        }
+
+        function playRepBeep() {
+            playBeep(800, 100);
+        }
+
+        // ===== NAVIGATION =====
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+            
+            document.querySelectorAll('.nav-item').forEach(item => {
+                if (item.dataset.screen === screenId) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        }
+
+        function connectWallet() {
+            showScreen('dashboard-screen');
+            document.querySelector('.nav-item[data-screen="dashboard-screen"]').classList.add('active');
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const btn = document.getElementById('soundBtn');
+            const toggle = document.getElementById('soundToggle');
+            
+            btn.textContent = soundEnabled ? 'SOUND' : 'MUTED';
+            
+            if (soundEnabled) {
+                toggle.classList.remove('off');
+            } else {
+                toggle.classList.add('off');
+            }
+        }
+
+        function showInfo() {
+            alert('Setup Instructions:\n\n• Position camera facing front view\n• Stand about 6 feet from camera\n• Ensure good lighting\n• Keep full body visible in frame\n• Start in UP position (arms extended)\n• Follow the countdown cues');
+        }
+
+        // ===== WORKOUT CONTROLS =====
+        let sessionActive = false;
+        let countdownActive = false;
+        let countdownValue = 10;
+        let countdownInterval = null;
+
+        function startWorkout() {
+            showScreen('session-screen');
+            setTimeout(() => {
+                initCamera();
+            }, 300);
+        }
+
+        function startCountdown() {
+            countdownActive = true;
+            countdownValue = 10;
+            
+            const overlay = document.getElementById('countdownOverlay');
+            const numberEl = document.getElementById('countdownNumber');
+            
+            overlay.style.display = 'flex';
+            updateFeedback('GET READY!');
+            
+            countdownInterval = setInterval(() => {
+                numberEl.textContent = countdownValue;
+                
+                if (countdownValue <= 3) {
+                    flashScreen(0.2);
+                }
+                
+                if (countdownValue === 0) {
+                    clearInterval(countdownInterval);
+                    overlay.style.display = 'none';
+                    countdownActive = false;
+                    startSession();
+                }
+                
+                countdownValue--;
+            }, 1000);
+        }
+
+        function endWorkout() {
+            if (confirm('End this session?')) {
+                endSession();
+                saveSessionToLog();
+                showScreen('dashboard-screen');
+                document.querySelector('.nav-item[data-screen="dashboard-screen"]').classList.add('active');
+            }
+        }
+
+        function resetWorkout() {
+            if (confirm('Reset rep counter?')) {
+                resetSession();
+            }
+        }
+
+        function saveSessionToLog() {
+            const duration = Math.floor((Date.now() - startTime) / 1000);
+            const minutes = Math.floor(duration / 60);
+            const seconds = duration % 60;
+            
+            const logHTML = `
+                <div class="log-entry">
+                    <div class="log-header">
+                        <div>
+                            <div class="log-date">Just Now</div>
+                            <div class="log-subdate">Latest Session</div>
+                        </div>
+                        <div>
+                            <div class="log-points">+${repCount * 10}</div>
+                            <div class="log-subdate">points</div>
+                        </div>
+                    </div>
+                    <div class="log-stats-grid">
+                        <div>
+                            <div class="log-stat-label">Duration</div>
+                            <div class="log-stat-value">${minutes}m ${seconds}s</div>
+                        </div>
+                        <div>
+                            <div class="log-stat-label">Count</div>
+                            <div class="log-stat-value">${repCount}</div>
+                        </div>
+                        <div>
+                            <div class="log-stat-label">Streak</div>
+                            <div class="log-stat-value">1 day</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('sessionLog').innerHTML = logHTML + document.getElementById('sessionLog').innerHTML;
+            
+            const currentTotal = parseInt(document.getElementById('totalPushups').textContent.replace(',', ''));
+            document.getElementById('totalPushups').textContent = (currentTotal + repCount).toLocaleString();
+            
+            const currentPoints = parseInt(document.getElementById('dashboardPoints').textContent.replace(',', ''));
+            document.getElementById('dashboardPoints').textContent = (currentPoints + (repCount * 10)).toLocaleString();
+        }
+
+        // ===== POSE DETECTION CODE =====
+        
         const CONFIG = {
-            ELBOW_ANGLE_DOWN: 120, // Degrees - when elbow is bent enough to count as "down" (more forgiving)
-            ELBOW_ANGLE_UP: 140,   // Degrees - when elbow is extended enough for "up"
+            ELBOW_ANGLE_DOWN: 120,
+            ELBOW_ANGLE_UP: 140,
             MIN_CONFIDENCE: 0.3,
-            DEBOUNCE_FRAMES: 3, // Prevent counting same rep multiple times
-            SESSION_DURATION: 60 // seconds
+            DEBOUNCE_FRAMES: 3,
+            SESSION_DURATION: 60,
+            COUNTDOWN_DURATION: 10
         };
 
-        // State
-        let detector = null;
-        let video = null;
-        let canvas = null;
-        let ctx = null;
-        let isRunning = false;
-        let sessionActive = false;
+        let detector;
+        let video, canvas, ctx;
         let repCount = 0;
-        let currentState = 'up'; // 'up' or 'down'
+        let currentState = 'up';
         let debounceCounter = 0;
         let startTime = null;
         let timerInterval = null;
-        let debugMode = false;
+        let animationId = null;
 
-        // Initialize
-        async function init() {
+        async function initCamera() {
             video = document.getElementById('video');
             canvas = document.getElementById('canvas');
             ctx = canvas.getContext('2d');
 
-            // Setup video
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({
-                    video: {
-                        facingMode: 'user',
-                        width: { ideal: 640 },
-                        height: { ideal: 480 }
-                    }
+                    video: { facingMode: 'user', width: 640, height: 480 }
                 });
                 video.srcObject = stream;
                 
-                // Wait for video to be ready
-                await new Promise((resolve) => {
-                    video.onloadedmetadata = () => {
-                        video.play();
-                        resolve();
-                    };
-                });
-                
-                // Set canvas to match video container dimensions
-                const container = document.querySelector('.video-container');
-                canvas.width = container.clientWidth;
-                canvas.height = container.clientHeight;
+                video.onloadedmetadata = () => {
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                };
 
+                await initPoseDetection();
             } catch (err) {
-                console.error('Error accessing camera:', err);
-                updateStatus('Camera access denied');
-                return;
-            }
-
-            // Load MoveNet model
-            try {
-                updateStatus('Loading AI model...');
-                
-                // CRITICAL: Wait for TensorFlow backend to initialize
-                console.log('Waiting for TensorFlow.js backend...');
-                await tf.ready();
-                console.log('TensorFlow.js ready! Backend:', tf.getBackend());
-                
-                // Now create the detector
-                console.log('Creating MoveNet detector...');
-                detector = await poseDetection.createDetector(
-                    poseDetection.SupportedModels.MoveNet,
-                    {
-                        modelType: poseDetection.movenet.modelType.SINGLEPOSE_LIGHTNING
-                    }
-                );
-                console.log('MoveNet model loaded successfully!');
-                
-                updateStatus('Ready! Press Start');
-                document.getElementById('loadingMsg').style.display = 'none';
-                isRunning = true;
-                detectPose();
-            } catch (err) {
-                console.error('Error loading model:', err);
-                updateStatus('Failed to load model: ' + err.message);
+                console.error('Camera error:', err);
+                alert('Camera access required. Please allow camera permissions.');
             }
         }
 
-        // Main pose detection loop
+        async function initPoseDetection() {
+            try {
+                await tf.ready();
+                
+                const model = poseDetection.SupportedModels.MoveNet;
+                detector = await poseDetection.createDetector(model, {
+                    modelType: poseDetection.movenet.modelType.SINGLEPOSE_LIGHTNING
+                });
+
+                updateFeedback('Model loaded!');
+                
+                setTimeout(() => {
+                    startCountdown();
+                }, 1000);
+                
+                detectPose();
+            } catch (err) {
+                console.error('Model loading error:', err);
+                updateFeedback('Error loading AI model');
+            }
+        }
+
         async function detectPose() {
-            if (!isRunning) return;
+            if (!detector || video.readyState !== 4) {
+                animationId = requestAnimationFrame(detectPose);
+                return;
+            }
 
             try {
                 const poses = await detector.estimatePoses(video);
                 
-                // Clear canvas
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-                if (poses && poses.length > 0) {
+                if (poses.length > 0) {
                     const pose = poses[0];
-                    
-                    // Draw skeleton
                     drawSkeleton(pose.keypoints);
                     
-                    // Analyze pose for push-up counting
-                    if (sessionActive) {
+                    if (sessionActive && !countdownActive) {
                         analyzePushUp(pose.keypoints);
                     }
                 }
@@ -384,120 +1307,75 @@
                 console.error('Detection error:', err);
             }
 
-            requestAnimationFrame(detectPose);
+            animationId = requestAnimationFrame(detectPose);
         }
 
-        // Calculate angle between three points
-        function calculateAngle(pointA, pointB, pointC) {
-            const radians = Math.atan2(pointC.y - pointB.y, pointC.x - pointB.x) -
-                          Math.atan2(pointA.y - pointB.y, pointA.x - pointB.x);
+        function calculateAngle(a, b, c) {
+            const radians = Math.atan2(c.y - b.y, c.x - b.x) - Math.atan2(a.y - b.y, a.x - b.x);
             let angle = Math.abs(radians * 180.0 / Math.PI);
-            
-            if (angle > 180.0) {
-                angle = 360.0 - angle;
-            }
-            
+            if (angle > 180.0) angle = 360.0 - angle;
             return angle;
         }
 
-        // Analyze pose for push-up detection
         function analyzePushUp(keypoints) {
-            // Get relevant keypoints (front view)
-            const leftShoulder = keypoints[5];   // Left shoulder
-            const rightShoulder = keypoints[6];  // Right shoulder
-            const leftElbow = keypoints[7];      // Left elbow
-            const rightElbow = keypoints[8];     // Right elbow
-            const leftWrist = keypoints[9];      // Left wrist
-            const rightWrist = keypoints[10];    // Right wrist
+            const leftShoulder = keypoints[5];
+            const rightShoulder = keypoints[6];
+            const leftElbow = keypoints[7];
+            const rightElbow = keypoints[8];
+            const leftWrist = keypoints[9];
+            const rightWrist = keypoints[10];
 
-            // Check confidence scores
             const minConfidence = CONFIG.MIN_CONFIDENCE;
             if (leftShoulder.score < minConfidence || rightShoulder.score < minConfidence ||
                 leftElbow.score < minConfidence || rightElbow.score < minConfidence ||
                 leftWrist.score < minConfidence || rightWrist.score < minConfidence) {
-                updateStatus('Body not detected');
+                updateFeedback('Body not detected');
                 return;
             }
 
-            // Calculate elbow angles (both arms)
             const leftElbowAngle = calculateAngle(leftShoulder, leftElbow, leftWrist);
             const rightElbowAngle = calculateAngle(rightShoulder, rightElbow, rightWrist);
-            
-            // Average the two elbow angles
             const avgElbowAngle = (leftElbowAngle + rightElbowAngle) / 2;
 
-            // Debug info - always show in console
-            console.log(`Elbow angles: L=${leftElbowAngle.toFixed(1)}° R=${rightElbowAngle.toFixed(1)}° Avg=${avgElbowAngle.toFixed(1)}° State=${currentState}`);
-
-            // Update debug display
-            if (debugMode) {
-                document.getElementById('leftElbowAngle').textContent = `L Elbow: ${leftElbowAngle.toFixed(1)}°`;
-                document.getElementById('rightElbowAngle').textContent = `R Elbow: ${rightElbowAngle.toFixed(1)}°`;
-                document.getElementById('bodyAngle').textContent = `Avg: ${avgElbowAngle.toFixed(1)}°`;
-            }
-
-            // State machine for counting reps
             if (debounceCounter > 0) {
                 debounceCounter--;
                 return;
             }
 
-            // Check if elbows are bent (down position)
-            // Looking for BENT elbows (smaller angle = more bent)
             if (avgElbowAngle < CONFIG.ELBOW_ANGLE_DOWN && currentState === 'up') {
                 currentState = 'down';
-                updateStatus('Down ⬇️', 'down');
+                updateFeedback('Down ⬇️');
                 debounceCounter = CONFIG.DEBOUNCE_FRAMES;
-                console.log('✓ Detected DOWN position');
             }
-            // Check if elbows are extended (up position) - count the rep!
-            // Looking for STRAIGHT elbows (larger angle = more straight)
             else if (avgElbowAngle > CONFIG.ELBOW_ANGLE_UP && currentState === 'down') {
                 currentState = 'up';
                 repCount++;
                 updateRepCount();
-                updateStatus('UP! +1 Rep ⬆️', 'up');
+                updateFeedback('UP! +1 Rep ⬆️');
                 debounceCounter = CONFIG.DEBOUNCE_FRAMES;
-                console.log('🎉 REP COUNTED! Total:', repCount);
-                
-                // Visual feedback
-                flashScreen();
-            }
-            // Show current state
-            else if (avgElbowAngle > CONFIG.ELBOW_ANGLE_UP) {
-                if (currentState === 'up') {
-                    updateStatus(`Ready (${avgElbowAngle.toFixed(0)}°)`, 'up');
-                }
-            } else if (avgElbowAngle < CONFIG.ELBOW_ANGLE_DOWN) {
-                if (currentState === 'down') {
-                    updateStatus(`Down (${avgElbowAngle.toFixed(0)}°)`, 'down');
-                }
-            } else {
-                updateStatus(`Transition (${avgElbowAngle.toFixed(0)}°)`);
+                flashScreen(0.3);
+                playRepBeep();
             }
         }
 
-        // Draw skeleton on canvas
         function drawSkeleton(keypoints) {
-            // Scale keypoints to canvas size
             const scaleX = canvas.width / video.videoWidth;
             const scaleY = canvas.height / video.videoHeight;
             
             const connections = [
-                [5, 7], [7, 9],   // Left arm
-                [6, 8], [8, 10],  // Right arm
-                [5, 6],           // Shoulders
-                [5, 11], [6, 12], // Torso
-                [11, 12],         // Hips
-                [11, 13], [13, 15], // Left leg
-                [12, 14], [14, 16]  // Right leg
+                [5, 7], [7, 9],
+                [6, 8], [8, 10],
+                [5, 6],
+                [5, 11], [6, 12],
+                [11, 12],
+                [11, 13], [13, 15],
+                [12, 14], [14, 16]
             ];
 
-            // Draw connections with thick, bright lines
-            ctx.strokeStyle = '#00FF00';  // Bright green
-            ctx.lineWidth = 4;
-            ctx.shadowBlur = 10;
-            ctx.shadowColor = '#00FF00';
+            ctx.strokeStyle = '#d2fffa';
+            ctx.lineWidth = 3;
+            ctx.shadowBlur = 8;
+            ctx.shadowColor = '#d2fffa';
             
             connections.forEach(([i, j]) => {
                 const kp1 = keypoints[i];
@@ -511,38 +1389,30 @@
                 }
             });
 
-            // Draw keypoints as large circles
-            ctx.shadowBlur = 15;
+            ctx.shadowBlur = 12;
             keypoints.forEach(kp => {
                 if (kp.score > CONFIG.MIN_CONFIDENCE) {
-                    // Outer glow
-                    ctx.fillStyle = '#00FF00';
+                    ctx.fillStyle = '#d2fffa';
                     ctx.beginPath();
-                    ctx.arc(kp.x * scaleX, kp.y * scaleY, 8, 0, 2 * Math.PI);
+                    ctx.arc(kp.x * scaleX, kp.y * scaleY, 6, 0, 2 * Math.PI);
                     ctx.fill();
                     
-                    // Inner bright dot
                     ctx.fillStyle = '#FFFFFF';
                     ctx.beginPath();
-                    ctx.arc(kp.x * scaleX, kp.y * scaleY, 4, 0, 2 * Math.PI);
+                    ctx.arc(kp.x * scaleX, kp.y * scaleY, 3, 0, 2 * Math.PI);
                     ctx.fill();
                 }
             });
             
-            // Reset shadow
             ctx.shadowBlur = 0;
         }
 
-        // UI Updates
         function updateRepCount() {
-            document.getElementById('repCount').textContent = 
-                repCount.toString().padStart(3, '0');
+            document.getElementById('repCount').textContent = repCount;
         }
 
-        function updateStatus(text, className = '') {
-            const statusEl = document.getElementById('status');
-            statusEl.textContent = text;
-            statusEl.className = 'status-indicator ' + className;
+        function updateFeedback(text) {
+            document.getElementById('feedbackText').textContent = text;
         }
 
         function updateTimer() {
@@ -553,24 +1423,30 @@
             
             const minutes = Math.floor(remaining / 60);
             const seconds = remaining % 60;
-            document.getElementById('timer').textContent = 
-                `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            document.getElementById('timer').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
 
             if (remaining === 0) {
                 endSession();
+                saveSessionToLog();
+                setTimeout(() => {
+                    alert(`Session Complete!\n\nTotal Pushups: ${repCount}\nPoints Earned: ${repCount * 10}`);
+                    showScreen('stats-screen');
+                    document.querySelector('.nav-item[data-screen="stats-screen"]').classList.add('active');
+                }, 500);
             }
         }
 
-        function flashScreen() {
+        function flashScreen(opacity = 0.3) {
             const overlay = document.createElement('div');
             overlay.style.position = 'fixed';
             overlay.style.top = '0';
             overlay.style.left = '0';
             overlay.style.width = '100%';
             overlay.style.height = '100%';
-            overlay.style.background = 'rgba(0, 255, 0, 0.3)';
+            overlay.style.background = `rgba(210, 255, 250, ${opacity})`;
             overlay.style.pointerEvents = 'none';
             overlay.style.transition = 'opacity 0.3s';
+            overlay.style.zIndex = '9999';
             document.body.appendChild(overlay);
             
             setTimeout(() => {
@@ -579,57 +1455,48 @@
             }, 100);
         }
 
-        // Session controls
         function startSession() {
             sessionActive = true;
             repCount = 0;
             currentState = 'up';
             startTime = Date.now();
             updateRepCount();
-            updateStatus('Get in position!');
+            updateFeedback('GO! Start pushing!');
+            
+            playStartBeep();
             
             timerInterval = setInterval(updateTimer, 1000);
-            document.getElementById('startBtn').disabled = true;
         }
 
         function endSession() {
             sessionActive = false;
+            countdownActive = false;
             clearInterval(timerInterval);
-            document.getElementById('startBtn').disabled = false;
-            updateStatus(`Session Complete! ${repCount} reps`);
+            clearInterval(countdownInterval);
+            updateFeedback(`Session Complete! ${repCount} reps`);
             
-            // Could save stats here
-            console.log('Session complete:', {
-                reps: repCount,
-                duration: CONFIG.SESSION_DURATION
-            });
+            if (video && video.srcObject) {
+                video.srcObject.getTracks().forEach(track => track.stop());
+            }
+            
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+            }
         }
 
         function resetSession() {
-            sessionActive = false;
-            clearInterval(timerInterval);
             repCount = 0;
-            startTime = null;
             currentState = 'up';
             updateRepCount();
-            updateStatus('Ready! Press Start');
-            document.getElementById('startBtn').disabled = false;
-            document.getElementById('timer').textContent = '0:00';
+            updateFeedback('Counter reset!');
         }
 
-        function toggleDebug() {
-            debugMode = !debugMode;
-            document.getElementById('angleDebug').style.display = 
-                debugMode ? 'block' : 'none';
-        }
-
-        // Event listeners
-        document.getElementById('startBtn').addEventListener('click', startSession);
-        document.getElementById('resetBtn').addEventListener('click', resetSession);
-        document.getElementById('debugBtn').addEventListener('click', toggleDebug);
-
-        // Start everything
-        init();
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggle = document.getElementById('soundToggle');
+            if (toggle && !soundEnabled) {
+                toggle.classList.add('off');
+            }
+        });
     </script>
 </body>
 </html>
